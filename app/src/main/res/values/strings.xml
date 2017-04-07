@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">冒牌电话薄</string>
+    <string name="demo_phoneNum">18810659693</string>
+    <string name="name">小森林</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
