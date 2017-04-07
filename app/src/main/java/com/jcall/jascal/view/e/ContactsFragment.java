@@ -21,12 +21,15 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
 import com.jcall.jascal.contract.GetContactsContract;
 import com.jcall.jascal.jcall.Constant;
 import com.jcall.jascal.jcall.R;
 import com.jcall.jascal.presenter.e.GetContactsPresenter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -38,15 +41,10 @@ import butterknife.OnClick;
 
 public class ContactsFragment extends Fragment implements GetContactsContract.View {
     private String[] initPermissions = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
+    private String[] initPermissions2 = {Manifest.permission.CALL_PHONE};
     private GetContactsContract.Presenter presenter;
-
     @Bind(R.id.contacts_content)
     CoordinatorLayout coordinatorLayout;
-
-    @OnClick(R.id.fab_call)
-    void turnToCall(){
-        Snackbar.make(coordinatorLayout, "turnToCall", Snackbar.LENGTH_SHORT).show();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,9 +88,20 @@ public class ContactsFragment extends Fragment implements GetContactsContract.Vi
                 if (permissions[0].equals(initPermissions[0])) {
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         presenter.getContacts(this.getActivity().getBaseContext());
+                        Snackbar.make(coordinatorLayout, "permission granted success", Snackbar.LENGTH_SHORT).show();
                     } else {
                         Snackbar.make(coordinatorLayout, "permission granted denied", Snackbar.LENGTH_SHORT).show();
                     }
+                } else {
+                    Snackbar.make(coordinatorLayout, "permission granted denied", Snackbar.LENGTH_SHORT).show();
+                }
+            } else {
+                Snackbar.make(coordinatorLayout, "permission granted denied", Snackbar.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == 322) {
+            if (grantResults.length > 0) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Snackbar.make(coordinatorLayout, "permission granted success, let`s call again", Snackbar.LENGTH_SHORT).show();
                 } else {
                     Snackbar.make(coordinatorLayout, "permission granted denied", Snackbar.LENGTH_SHORT).show();
                 }
@@ -122,7 +131,7 @@ public class ContactsFragment extends Fragment implements GetContactsContract.Vi
                 if (phoneNum != null && !phoneNum.equals("")) {
                     Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNum));
                     if (ActivityCompat.checkSelfPermission(ContactsFragment.this.getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                        Snackbar.make(coordinatorLayout, "call denied", Snackbar.LENGTH_SHORT).show();
+                        requestPermissions(initPermissions2, 322);
                         return;
                     }
                     ContactsFragment.this.getActivity().startActivity(intent);
